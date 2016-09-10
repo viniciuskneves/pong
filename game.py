@@ -84,9 +84,31 @@ def computerMove(ball, direction_x, paddle):
 
     return paddle
 
+# 1 point for hitting the ball, 5 points for beating the computer and resets to 0 is loses
+def checkPointScored(paddle_right, ball, score, direction_x):
+    if ball.right == LINE_THICKNESS: # Resets to 0 if loses
+        score = 0
+    elif direction_x == 1 and paddle_right.left == ball.right and paddle_right.top <= ball.top and paddle_right.bottom >= ball.bottom:
+        score += 1
+    elif ball.left == LINE_THICKNESS:
+        score += 5
+
+    return score
+
+# Displays the score on the board
+def displayScore(score):
+    text = FONT.render('Score = %s' %(score), True, WHITE)
+    display = text.get_rect()
+    display.topleft = (WINDOW_WIDTH - 150, 25)
+    DISPLAY_SURF.blit(text, display)
+
 def main():
     pygame.init()
     global DISPLAY_SURF
+    # Font information
+    global FONT, FONT_SIZE
+    FONT_SIZE = 20
+    FONT = pygame.font.Font('freesansbold.ttf', FONT_SIZE)
 
     FPS_CLOCK = pygame.time.Clock()
     DISPLAY_SURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -97,6 +119,7 @@ def main():
     ball_y = (WINDOW_HEIGHT - LINE_THICKNESS) / 2
     player_left_position = (WINDOW_HEIGHT - PADDLE_SIZE) / 2
     player_right_position = (WINDOW_HEIGHT - PADDLE_SIZE) / 2
+    score = 0
 
     # Create rectangles (x-cord, y-cord, width, height)
     paddle_left = pygame.Rect(PADDLE_OFFSET, player_left_position, LINE_THICKNESS, PADDLE_SIZE)
@@ -131,8 +154,11 @@ def main():
 
         ball = moveBall(ball, ball_direction_x, ball_direction_y)
         ball_direction_x, ball_direction_y = checkEdgeCollision(ball, ball_direction_x, ball_direction_y)
+        score = checkPointScored(paddle_right, ball, score, ball_direction_x)
         ball_direction_x = ball_direction_x * checkHit(ball, paddle_right, paddle_left, ball_direction_x)
         paddle_left = computerMove(ball, ball_direction_x, paddle_left)
+
+        displayScore(score)
 
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
