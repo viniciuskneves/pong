@@ -57,6 +57,23 @@ def checkEdgeCollision(ball, direction_x, direction_y):
 
     return direction_x, direction_y
 
+# Makes the paddle follows the ball
+def computerMove(ball, direction_x, paddle):
+    # If the ball is moving away, center it
+    if direction_x == 1:
+        if paddle.centery < WINDOW_HEIGHT / 2:
+            paddle.y += 1
+        elif paddle.centery > WINDOW_HEIGHT / 2:
+            paddle.y -= 1
+    # If the ball is coming, track its movement
+    if direction_x == -1:
+        if paddle.centery < ball.centery:
+            paddle.y += 1
+        elif paddle.centery > ball.centery:
+            paddle.y -= 1
+
+    return paddle
+
 def main():
     pygame.init()
     global DISPLAY_SURF
@@ -104,6 +121,7 @@ def main():
 
         ball = moveBall(ball, ball_direction_x, ball_direction_y)
         ball_direction_x, ball_direction_y = checkEdgeCollision(ball, ball_direction_x, ball_direction_y)
+        paddle_left = computerMove(ball, ball_direction_x, paddle_left)
 
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
