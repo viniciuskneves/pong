@@ -86,7 +86,7 @@ def computerMove(ball, direction_x, paddle):
 
 # 1 point for hitting the ball, 5 points for beating the computer and resets to 0 is loses
 def checkPointScored(paddle_right, ball, score, direction_x):
-    if ball.right == LINE_THICKNESS: # Resets to 0 if loses
+    if ball.right == WINDOW_WIDTH - LINE_THICKNESS: # Resets to 0 if loses
         score = 0
     elif direction_x == 1 and paddle_right.left == ball.right and paddle_right.top <= ball.top and paddle_right.bottom >= ball.bottom:
         score += 1
