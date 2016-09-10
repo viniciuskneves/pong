@@ -86,12 +86,16 @@ def main():
     drawPaddle(paddle_right)
     drawBall(ball)
 
+    pygame.mouse.set_visible(0) # Makes cursor invisible
     # Game main loop
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == MOUSEMOTION:
+                mouse_x, mouse_y = event.pos
+                paddle_right.y = mouse_y
 
         drawArena()
         drawPaddle(paddle_left)
