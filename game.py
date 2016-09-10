@@ -39,6 +39,12 @@ def drawPaddle(paddle):
 def drawBall(ball):
     pygame.draw.rect(DISPLAY_SURF, WHITE, ball)
 
+# Moves the ball -- returns new ball position
+def moveBall(ball, direction_x, direction_y):
+    ball.x += direction_x
+    ball.y += direction_y
+    return ball
+
 def main():
     pygame.init()
     global DISPLAY_SURF
@@ -58,6 +64,10 @@ def main():
     paddle_right = pygame.Rect(WINDOW_WIDTH - PADDLE_OFFSET - LINE_THICKNESS, player_right_position, LINE_THICKNESS, PADDLE_SIZE)
     ball = pygame.Rect(ball_x, ball_y, LINE_THICKNESS, LINE_THICKNESS)
 
+    # Defines ball starting directions
+    ball_direction_x = -1 # Left --> -1  /  Right --> 1
+    ball_direction_y = -1 # Up --> -1  /  Down --> 1
+
     # Drawing objects
     drawArena()
     drawPaddle(paddle_left)
@@ -70,6 +80,13 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+
+        drawArena()
+        drawPaddle(paddle_left)
+        drawPaddle(paddle_right)
+        drawBall(ball)
+
+        ball = moveBall(ball, ball_direction_x, ball_direction_y)
 
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
