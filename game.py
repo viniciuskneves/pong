@@ -19,7 +19,7 @@ WHITE = (255, 255, 255)
 
 # Draws the game arena
 def drawArena():
-    DISPLAY_SURF.fill((0, 0, 0)) # Screen background
+    DISPLAY_SURF.fill(BLACK) # Screen background
     # Draws the boundaries - (surface, color, ((top-cord, left-cord), (width, height)), thickness) - Half of the thickness is outside of the rectangle/window
     pygame.draw.rect(DISPLAY_SURF, WHITE, ((0, 0), (WINDOW_WIDTH, WINDOW_HEIGHT)), LINE_THICKNESS * 2)
     # Draws the center line
@@ -56,6 +56,16 @@ def checkEdgeCollision(ball, direction_x, direction_y):
         direction_x = -direction_x
 
     return direction_x, direction_y
+
+# Check if the ball hits the paddle -- Returns 1 if doesn't and 1 if does
+def checkHit(ball, paddle_right, paddle_left, direction_x):
+    # Check if the ball in between paddle limits
+    if direction_x == 1 and paddle_right.left == ball.right and paddle_right.top <= ball.top and paddle_right.bottom >= ball.bottom:
+        return -1
+    elif direction_x == -1 and paddle_left.right == ball.left and paddle_left.top <= ball.top and paddle_left.bottom >= ball.bottom:
+        return -1
+    else:
+        return 1
 
 # Makes the paddle follows the ball
 def computerMove(ball, direction_x, paddle):
@@ -121,6 +131,7 @@ def main():
 
         ball = moveBall(ball, ball_direction_x, ball_direction_y)
         ball_direction_x, ball_direction_y = checkEdgeCollision(ball, ball_direction_x, ball_direction_y)
+        ball_direction_x = ball_direction_x * checkHit(ball, paddle_right, paddle_left, ball_direction_x)
         paddle_left = computerMove(ball, ball_direction_x, paddle_left)
 
         pygame.display.update()
