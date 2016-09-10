@@ -69,14 +69,8 @@ def checkHit(ball, paddle_right, paddle_left, direction_x):
 
 # Makes the paddle follows the ball
 def computerMove(ball, direction_x, paddle):
-    # If the ball is moving away, center it
-    if direction_x == 1:
-        if paddle.centery < WINDOW_HEIGHT / 2:
-            paddle.y += 1
-        elif paddle.centery > WINDOW_HEIGHT / 2:
-            paddle.y -= 1
-    # If the ball is coming, track its movement
-    if direction_x == -1:
+    # If the ball is coming, track its movement after middle
+    if direction_x == -1 and ball.centerx <= WINDOW_WIDTH / 2:
         if paddle.centery < ball.centery:
             paddle.y += 1
         elif paddle.centery > ball.centery:
