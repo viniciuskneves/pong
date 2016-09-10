@@ -2,7 +2,7 @@ import pygame, sys
 from pygame.locals import *
 
 # Game speed
-FPS = 200
+FPS = 500
 
 # Game's window size
 WINDOW_WIDTH = 400
