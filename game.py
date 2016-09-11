@@ -78,23 +78,25 @@ def computerMove(ball, direction_x, paddle):
 
     return paddle
 
-# 1 point for hitting the ball, 5 points for beating the computer and resets to 0 is loses
-def checkPointScored(paddle_right, ball, score, direction_x):
-    if ball.right == WINDOW_WIDTH - LINE_THICKNESS: # Resets to 0 if loses
-        score = 0
-    elif direction_x == 1 and paddle_right.left == ball.right and paddle_right.top <= ball.top and paddle_right.bottom >= ball.bottom:
-        score += 1
+# Checks for points scored
+def checkPointScored(ball, score_right, score_left):
+    if ball.right == WINDOW_WIDTH - LINE_THICKNESS:
+        score_left += 1
     elif ball.left == LINE_THICKNESS:
-        score += 5
+        score_right += 1
 
-    return score
+    return score_right, score_left
 
 # Displays the score on the board
-def displayScore(score):
-    text = FONT.render('Score = %s' %(score), True, WHITE)
-    display = text.get_rect()
-    display.topleft = (WINDOW_WIDTH - 150, 25)
-    DISPLAY_SURF.blit(text, display)
+def displayScore(score_right, score_left):
+    text_right = FONT.render('%s' %(score_right), True, WHITE)
+    display_right = text_right.get_rect()
+    display_right.topleft = (WINDOW_WIDTH - 150, 25)
+    text_left = FONT.render('%s' %(score_left), True, WHITE)
+    display_left = text_left.get_rect()
+    display_left.topleft = (150, 25)
+    DISPLAY_SURF.blit(text_right, display_right)
+    DISPLAY_SURF.blit(text_left, display_left)
 
 def main():
     pygame.init()
@@ -113,7 +115,8 @@ def main():
     ball_y = (WINDOW_HEIGHT - LINE_THICKNESS) / 2
     player_left_position = (WINDOW_HEIGHT - PADDLE_SIZE) / 2
     player_right_position = (WINDOW_HEIGHT - PADDLE_SIZE) / 2
-    score = 0
+    score_right = 0
+    score_left = 0
 
     # Create rectangles (x-cord, y-cord, width, height)
     paddle_left = pygame.Rect(PADDLE_OFFSET, player_left_position, LINE_THICKNESS, PADDLE_SIZE)
@@ -148,11 +151,11 @@ def main():
 
         ball = moveBall(ball, ball_direction_x, ball_direction_y)
         ball_direction_x, ball_direction_y = checkEdgeCollision(ball, ball_direction_x, ball_direction_y)
-        score = checkPointScored(paddle_right, ball, score, ball_direction_x)
+        score_right, score_left = checkPointScored(ball, score_right, score_left)
         ball_direction_x = ball_direction_x * checkHit(ball, paddle_right, paddle_left, ball_direction_x)
         paddle_left = computerMove(ball, ball_direction_x, paddle_left)
 
-        displayScore(score)
+        displayScore(score_right, score_left)
 
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
