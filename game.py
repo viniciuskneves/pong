@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 from pygame.locals import *
 
 # Game speed
@@ -70,10 +70,10 @@ def checkHit(ball, paddle_right, paddle_left, direction_x):
 # Makes the paddle follows the ball
 def computerMove(ball, direction_x, paddle):
     # If the ball is coming, track its movement after middle
-    if direction_x == -1 and ball.centerx <= WINDOW_WIDTH / 2:
-        if paddle.centery < ball.centery:
+    if direction_x == -1:
+        if paddle.centery < ball.centery and random.random() < 0.9:
             paddle.y += 1
-        elif paddle.centery > ball.centery:
+        elif paddle.centery > ball.centery and random.random() < 0.9:
             paddle.y -= 1
 
     return paddle
