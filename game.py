@@ -1,4 +1,4 @@
-import pygame, sys, random
+import pygame, sys, random, learner
 from pygame.locals import *
 
 # Game speed
@@ -133,16 +133,20 @@ def main():
     drawPaddle(paddle_right)
     drawBall(ball)
 
-    pygame.mouse.set_visible(0) # Makes cursor invisible
+    rlearner = learner.Learner(ball, paddle_right)
+
+    #pygame.mouse.set_visible(0) # Makes cursor invisible
     # Game main loop
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == MOUSEMOTION:
-                mouse_x, mouse_y = event.pos
-                paddle_right.y = mouse_y
+            #elif event.type == MOUSEMOTION:
+                #mouse_x, mouse_y = event.pos
+                #paddle_right.y = mouse_y
+
+        paddle_right.y += rlearner.learn(score_left)
 
         drawArena()
         drawPaddle(paddle_left)
