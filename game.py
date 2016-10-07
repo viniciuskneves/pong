@@ -1,13 +1,12 @@
-import pygame, sys, random, learner
+import pygame, sys, random, learner, qlearning
 from pygame.locals import *
 
 # Game speed
-FPS = 500
+FPS = 50000
 
 # Game's window size
 WINDOW_WIDTH = 400
-WINDOW_HEIGHT = 300
-
+WINDOW_HEIGHT = 300 
 # Arena settings
 LINE_THICKNESS = 10
 PADDLE_SIZE = 50
@@ -133,20 +132,34 @@ def main():
     drawPaddle(paddle_right)
     drawBall(ball)
 
-    rlearner = learner.Learner(ball, paddle_right)
+    #rlearner = learner.Learner(ball, paddle_right)
+
+    ql = qlearning.QLearning(ball, paddle_right)
+    score = score_left
+    direction = ball_direction_x
 
     #pygame.mouse.set_visible(0) # Makes cursor invisible
     # Game main loop
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+    i = 1
+    keep_playing = True
+    while i < 10000000 and keep_playing == True:
+        #for event in pygame.event.get():
+            #if event.type == QUIT:
+                #pygame.quit()
+                #keep_playing = False
             #elif event.type == MOUSEMOTION:
                 #mouse_x, mouse_y = event.pos
                 #paddle_right.y = mouse_y
 
-        paddle_right.y += rlearner.learn(score_left)
+        #paddle_right.y += rlearner.learn(score_left, ball_direction_x, i)
+
+
+        state = ql.getState(ball_direction_y)
+        action = ql.getAction(state)
+        direction = ball_direction_x
+        paddle_right.y += action
+        #paddle_right.y = action * 50
+
 
         drawArena()
         drawPaddle(paddle_left)
@@ -163,6 +176,24 @@ def main():
 
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
+
+
+        newState = ql.getState(ball_direction_y)
+        reward = ql.getReward(score, score_left, direction, ball_direction_x)
+
+        ql.setLearning(state, action, reward, newState)
+        score = score_left
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                keep_playing = False
+        # print "Iteration: {:d}".format(i)
+        i += 1
+
+    print "Score: {:d} x {:d}".format(score_left, score_right)
+    print ql.printQ()
+    #print rlearner.printQ()
 
 if __name__ == '__main__':
     main()
