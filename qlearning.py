@@ -1,4 +1,5 @@
-import random
+import random, ast
+from math import copysign
 
 class QLearning:
     def __init__(self, ball, paddle):
@@ -7,6 +8,7 @@ class QLearning:
 
         self.actions = [-1, 0, 1]
         self.epsilon = 1 # Exploration factor
+        #self.epsilon = 0 # Exploration factor
         self.epsilonDecrement = 0.0000001
         self.epsilonMin = 0.1
         self.alpha = 1 # Learning factor
@@ -15,6 +17,12 @@ class QLearning:
         self.previousLine = None
         self.previousColumn = None
         self.q = {}
+        #with open('states7', 'r') as f:
+            #val = f.read()
+            #self.q = ast.literal_eval(val)
+
+        self.ball_centery = ball.centery
+        self.paddle_centery = paddle.centery
 
     def setLearning(self, state, action, reward, newState):
         if self.alpha > 0.01:
@@ -26,18 +34,18 @@ class QLearning:
         nextWeight = previousWeight + self.alpha * (reward + (self.gamma * maxQ - previousWeight))
         self.q[(state, action)] = nextWeight
 
-    def getReward(self, previousScore, newScore, previousDirection, newDirection):
-        if newScore > previousScore:
-            return -10
-        elif previousDirection <> newDirection:
-            return 100
+    def getReward(self):
+        old_distance = abs(self.paddle_centery - self.ball_centery)
+        paddle_centery = self.paddle.centery
+        ball_centery = self.ball.centery
+        new_distance = abs(paddle_centery - ball_centery)
+        if new_distance < old_distance:
+            reward = 1
         else:
-            ballLine = self.getBallLine()
-            paddleLine = self.getPaddleLine()
-            if ballLine == paddleLine:
-                return 10
-            else:
-                return -1 * abs(ballLine - paddleLine)
+            reward = -1
+        self.paddle_centery = paddle_centery
+        self.ball_centery = ball_centery
+        return reward
 
     def getAction(self, state):
         if (self.epsilon > self.epsilonMin):
@@ -49,27 +57,15 @@ class QLearning:
             return max([self.q.get((state, a), 0) for a in self.actions])
 
     def getPaddleLine(self):
-        #return self.paddle.centery / 50
         return self.paddle.centery / 25
-        #return self.paddle.centery
 
     def getBallLine(self):
-        #return self.ball.centery / 50 # 6 lines
-        #return self.ball.centery / 25 # 6 lines
         return self.ball.centery / 25 # 6 lines
-        #return self.ball.centery
-
-    def getBallColumn(self):
-        #return self.ball.centerx / 20 # 20 columns
-        return self.ball.centerx / 10 # 20 columns
-        #return self.ball.centerx
 
     def getState(self, direction_y):
         line = self.getBallLine()
-        column = self.getBallColumn()
         position = self.getPaddleLine() # Paddle position
-        return (line, column, position, direction_y)
+        return (line, position, direction_y)
 
     def printQ(self):
         print self.q
-        print self.q.values()

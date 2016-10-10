@@ -2,7 +2,7 @@ import pygame, sys, random, learner, qlearning
 from pygame.locals import *
 
 # Game speed
-FPS = 50000
+FPS = 500000
 
 # Game's window size
 WINDOW_WIDTH = 400
@@ -68,11 +68,11 @@ def checkHit(ball, paddle_right, paddle_left, direction_x):
 
 # Makes the paddle follows the ball
 def computerMove(ball, direction_x, paddle):
-    # If the ball is coming, track its movement after middle
-    if direction_x == -1:
-        if paddle.centery < ball.centery and random.random() < 0.9:
+    # If the ball is coming
+    if direction_x == -1 and random.random() < 0.9:
+        if paddle.centery < ball.centery:
             paddle.y += 1
-        elif paddle.centery > ball.centery and random.random() < 0.9:
+        elif paddle.centery > ball.centery:
             paddle.y -= 1
 
     return paddle
@@ -149,16 +149,14 @@ def main():
                 #keep_playing = False
             #elif event.type == MOUSEMOTION:
                 #mouse_x, mouse_y = event.pos
-                #paddle_right.y = mouse_y
+                #paddle_left.y = mouse_y
 
-        #paddle_right.y += rlearner.learn(score_left, ball_direction_x, i)
 
 
         state = ql.getState(ball_direction_y)
         action = ql.getAction(state)
         direction = ball_direction_x
         paddle_right.y += action
-        #paddle_right.y = action * 50
 
 
         drawArena()
@@ -179,7 +177,7 @@ def main():
 
 
         newState = ql.getState(ball_direction_y)
-        reward = ql.getReward(score, score_left, direction, ball_direction_x)
+        reward = ql.getReward()
 
         ql.setLearning(state, action, reward, newState)
         score = score_left
@@ -188,12 +186,10 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 keep_playing = False
-        # print "Iteration: {:d}".format(i)
         i += 1
 
     print "Score: {:d} x {:d}".format(score_left, score_right)
-    print ql.printQ()
-    #print rlearner.printQ()
+    ql.printQ()
 
 if __name__ == '__main__':
     main()
